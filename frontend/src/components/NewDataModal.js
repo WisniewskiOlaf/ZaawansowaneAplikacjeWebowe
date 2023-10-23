@@ -1,54 +1,44 @@
-import React, { Component, Fragment } from "react";
+import React, { useState } from "react";
 import { Button, Modal, ModalHeader, ModalBody } from "reactstrap";
 import NewDataForm from "./NewDataForm";
 
-class NewDataModal extends Component {
-  state = {
-    modal: false
+function NewDataModal(props) {
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => {
+    setModal(!modal);
   };
 
-  toggle = () => {
-    this.setState(previous => ({
-      modal: !previous.modal
-    }));
-  };
+  const create = props.create;
+  const title = create ? "Creating New Data" : "Editing Data";
 
-  render() {
-    const create = this.props.create;
-
-    var title = "Editing Data";
-    var button = <Button onClick={this.toggle}>Edit</Button>;
-    if (create) {
-      title = "Creating New Data";
-
-      button = (
-        <Button
-          color="primary"
-          className="float-right"
-          onClick={this.toggle}
-          style={{ minWidth: "200px" }}
-        >
-          Create New
-        </Button>
-      );
-    }
-
-    return (
-      <Fragment>
-        {button}
-        <Modal isOpen={this.state.modal} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}>{title}</ModalHeader>
+  return (
+      <>
+        {create ? (
+            <Button
+                color="primary"
+                className="float-right"
+                onClick={toggle}
+                style={{ minWidth: "200px" }}
+            >
+              Create New
+            </Button>
+        ) : (
+            <Button onClick={toggle}>Edit</Button>
+        )}
+        <Modal isOpen={modal} toggle={toggle}>
+          <ModalHeader toggle={toggle}>{title}</ModalHeader>
           <ModalBody>
             <NewDataForm
-              resetState={this.props.resetState}
-              toggle={this.toggle}
-              data={this.props.data}
+                resetState={props.resetState}
+                toggle={toggle}
+                data={props.data}
+                create={props.create}
             />
           </ModalBody>
         </Modal>
-      </Fragment>
-    );
-  }
+      </>
+  );
 }
 
 export default NewDataModal;
