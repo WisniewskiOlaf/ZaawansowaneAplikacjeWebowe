@@ -33,6 +33,7 @@ function NewDataModal(props) {
                 resetState={props.resetState}
                 toggle={toggle}
                 data={props.data}
+                create={props.create}
             />
           </ModalBody>
         </Modal>

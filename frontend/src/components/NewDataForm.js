@@ -1,13 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
 import axios from "axios";
 
 import { API_URL } from "../constants";
 
-function NewDataForm(props) {
-  const [formData, setFormData] = useState({ pk: 0, data: "" });
+const defaultIfEmpty = (value) => {
+  return value === "" ? "" : value;
+};
+const FormUnit = ({title,onChange}) =>{
+  return(
+      <>
+        <Label for="data">{title}</Label>
+        <Input
+            type="text"
+            name="data"
+            onChange={onChange}
 
+        />
+      </>
+  )
+}
+
+
+function NewDataForm(props) {
+    const [formData, setFormData] = useState({ pk: 0, data: "" });
+    const [isEditing,setEditing] = useState(false);
+    const [Inputs,setInputs] = useState([
+        {title:"Pierwszy"},
+    ])
+
+    const [allData,setAllData] = useState([]);
+    const formRef = useRef(null);
   useEffect(() => {
     if (props.data) {
       const { pk, data } = props.data;
@@ -15,16 +39,25 @@ function NewDataForm(props) {
     }
   }, [props.data]);
 
+
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const createData = (e) => {
     e.preventDefault();
-    axios.post(API_URL, formData).then(() => {
-      props.resetState();
-      props.toggle();
-    });
+
+      for(let i =0; i < e.target.length-2;i++){
+          console.log(e?.target[i]?.value)
+          const newData = {pk:i,data:e?.target[i]?.value};
+          axios.post(API_URL, newData).then(() => {
+              props.resetState();
+              props.toggle();
+          });
+      }
+
+
   };
 
   const editData = (e) => {
@@ -35,20 +68,24 @@ function NewDataForm(props) {
     });
   };
 
-  const defaultIfEmpty = (value) => {
-    return value === "" ? "" : value;
-  };
+  const AddInputField = () =>{
+
+    setInputs(prev => [...prev, {title:"Dodane Pole"}])
+  }
 
   return (
-      <Form onSubmit={props.data ? editData : createData}>
+      <Form onSubmit={props.data ? editData : createData} ref={formRef}>
         <FormGroup>
-          <Label for="data">Data:</Label>
-          <Input
-              type="text"
-              name="data"
-              onChange={onChange}
-              value={defaultIfEmpty(formData.data)}
-          />
+          {Inputs.map((dane,index)=>{
+            return(
+                <FormUnit key={index} title={dane.title} onChange={onChange} />
+            )
+          })}
+            {props.create ?
+                <Button onClick={()=>AddInputField()}>Dodaj Pole</Button>
+                :
+                ""
+            }
         </FormGroup>
         <Button>Send</Button>
       </Form>
