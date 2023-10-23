@@ -1,12 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { Table } from "reactstrap";
 import NewDataModal from "./NewDataModal";
 
 import ConfirmRemovalModal from "./ConfirmRemovalModal";
 
-class DataList extends Component {
-  render() {
-    const data = this.props.data;
+function DataList(props){
+    const data = props.data;
     return (
       <Table dark>
         <thead>
@@ -30,12 +29,12 @@ class DataList extends Component {
                   <NewDataModal
                     create={false}
                     data={d}
-                    resetState={this.props.resetState}
+                    resetState={props.resetState}
                   />
                   &nbsp;&nbsp;
                   <ConfirmRemovalModal
                     pk={d.pk}
-                    resetState={this.props.resetState}
+                    resetState={props.resetState}
                   />
                 </td>
               </tr>
@@ -44,7 +43,6 @@ class DataList extends Component {
         </tbody>
       </Table>
     );
-  }
 }
 
 export default DataList;

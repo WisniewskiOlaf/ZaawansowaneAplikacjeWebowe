@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 import DataList from "./DataList";
 import NewDataModal from "./NewDataModal";
@@ -7,42 +7,35 @@ import axios from "axios";
 
 import { API_URL } from "../constants";
 
-class Home extends Component {
-  state = {
-    data: []
+function Home() {
+  const [data, setData] = useState([]);
+
+  const getData = () => {
+    axios.get(API_URL).then((res) => setData(res.data));
   };
 
-  componentDidMount() {
-    this.resetState();
-  }
-
-  getData = () => {
-    axios.get(API_URL).then(res => this.setState({ data: res.data }));
+  const resetState = () => {
+    getData();
   };
 
-  resetState = () => {
-    this.getData();
-  };
+  useEffect(() => {
+    resetState();
+  }, []);
 
-  render() {
-    return (
+  return (
       <Container style={{ marginTop: "20px" }}>
         <Row>
           <Col>
-            <DataList
-              data={this.state.data}
-              resetState={this.resetState}
-            />
+            <DataList data={data} resetState={resetState} />
           </Col>
         </Row>
         <Row>
           <Col>
-            <NewDataModal create={true} resetState={this.resetState} />
+            <NewDataModal create={true} resetState={resetState} />
           </Col>
         </Row>
       </Container>
-    );
-  }
+  );
 }
 
 export default Home;

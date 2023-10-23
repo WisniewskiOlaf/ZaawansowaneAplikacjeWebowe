@@ -1,63 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 
 import axios from "axios";
 
 import { API_URL } from "../constants";
 
-class NewDataForm extends React.Component {
-  state = {
-    pk: 0,
-    data: ""
-  };
+function NewDataForm(props) {
+  const [formData, setFormData] = useState({ pk: 0, data: "" });
 
-  componentDidMount() {
-    if (this.props.data) {
-      const { pk, data } = this.props.data;
-      this.setState({ pk, data });
+  useEffect(() => {
+    if (props.data) {
+      const { pk, data } = props.data;
+      setFormData({ pk, data });
     }
-  }
+  }, [props.data]);
 
-  onChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  createData = e => {
+  const createData = (e) => {
     e.preventDefault();
-    axios.post(API_URL, this.state).then(() => {
-      this.props.resetState();
-      this.props.toggle();
+    axios.post(API_URL, formData).then(() => {
+      props.resetState();
+      props.toggle();
     });
   };
 
-  editData = e => {
+  const editData = (e) => {
     e.preventDefault();
-    axios.put(API_URL + this.state.pk, this.state).then(() => {
-      this.props.resetState();
-      this.props.toggle();
+    axios.put(API_URL + formData.pk, formData).then(() => {
+      props.resetState();
+      props.toggle();
     });
   };
 
-  defaultIfEmpty = value => {
+  const defaultIfEmpty = (value) => {
     return value === "" ? "" : value;
   };
 
-  render() {
-    return (
-      <Form onSubmit={this.props.data ? this.editData : this.createData}>
+  return (
+      <Form onSubmit={props.data ? editData : createData}>
         <FormGroup>
           <Label for="data">Data:</Label>
           <Input
-            type="text"
-            name="data"
-            onChange={this.onChange}
-            value={this.defaultIfEmpty(this.state.data)}
+              type="text"
+              name="data"
+              onChange={onChange}
+              value={defaultIfEmpty(formData.data)}
           />
         </FormGroup>
         <Button>Send</Button>
       </Form>
-    );
-  }
+  );
 }
 
 export default NewDataForm;
