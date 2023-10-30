@@ -1,55 +1,49 @@
-import React, { Component, Fragment } from "react";
+import React, { useState } from "react";
 import { Modal, ModalHeader, Button, ModalFooter } from "reactstrap";
 
 import axios from "axios";
 
 import { API_URL } from "../constants";
 
-class ConfirmRemovalModal extends Component {
-  state = {
-    modal: false
+function ConfirmRemovalModal(props) {
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => {
+    setModal(prev => !prev);
   };
 
-  toggle = () => {
-    this.setState(previous => ({
-      modal: !previous.modal
-    }));
-  };
-
-  deleteData = pk => {
+  const deleteData = (pk) => {
     axios.delete(API_URL + pk).then(() => {
-      this.props.resetState();
-      this.toggle();
+      props.resetState();
+      toggle();
     });
   };
 
-  render() {
-    return (
-      <Fragment>
-        <Button color="danger" onClick={() => this.toggle()}>
+  return (
+      <>
+        <Button color="danger" onClick={toggle}>
           Remove
         </Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}>
-            Do you really wanna delete the data?
+        <Modal isOpen={modal} toggle={toggle}>
+          <ModalHeader toggle={toggle}>
+            Do you really want to delete the data?
           </ModalHeader>
 
           <ModalFooter>
-            <Button type="button" onClick={() => this.toggle()}>
+            <Button type="button" onClick={toggle}>
               Cancel
             </Button>
             <Button
-              type="button"
-              color="primary"
-              onClick={() => this.deleteData(this.props.pk)}
+                type="button"
+                color="primary"
+                onClick={() => deleteData(props.pk)}
             >
               Yes
             </Button>
           </ModalFooter>
         </Modal>
-      </Fragment>
-    );
-  }
+      </>
+  );
 }
 
 export default ConfirmRemovalModal;
